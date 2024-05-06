@@ -5,44 +5,38 @@ func trap(height []int) int {
 	if len(height) <= 2 {
 		return 0
 	}
-	min := height[0]
-	if height[len(height)-1] < min {
-		min = height[len(height)-1]
+	if height[0] >= height[len(height)-1] {
+		var (
+			index int
+			area  int
+		)
+		for i := len(height) - 2; i >= 0; i-- {
+			if height[i] < height[len(height)-1] {
+				area += height[len(height)-1] - height[i]
+				continue
+			}
+			index = i
+			break
+		}
+		if index == 0 {
+			return area
+		}
+		return area + trap(height[:index+1])
 	}
 	var (
-		index = 0
-		max   = min
+		index int
+		area  int
 	)
-	for i, item := range height {
-		if i == 0 || i == len(height)-1 {
+	for i := 1; i < len(height); i++ {
+		if height[0] > height[i] {
+			area += height[0] - height[i]
 			continue
 		}
-		if max >= item {
-			continue
-		}
-		max = item
 		index = i
+		break
 	}
-	if index == 0 {
-		return sumSubList(height)
+	if index == len(height)-1 {
+		return area
 	}
-	var res int
-	res += trap(height[:index+1])
-	res += trap(height[index:])
-	return res
-}
-
-func sumSubList(subList []int) int {
-	if len(subList) <= 2 {
-		return 0
-	}
-	min := subList[0]
-	if min > subList[len(subList)-1] {
-		min = subList[len(subList)-1]
-	}
-	var res = min * (len(subList) - 2)
-	for i := 1; i <= len(subList)-2; i++ {
-		res -= subList[i]
-	}
-	return res
+	return area + trap(height[index:])
 }
